@@ -1,0 +1,6 @@
+#custom-overlay {
+    transition: all 0.2s ease-in-out;
+}
+#custom-overlay:hover {
+    box-shadow: 3px 3px 15px rgba(0,0,0,0.3);
+}
