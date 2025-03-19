@@ -1,6 +1,73 @@
+/* Overlay Styles */
 #custom-overlay {
-    transition: all 0.2s ease-in-out;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 270px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    z-index: 9999;
+    font-family: Arial, sans-serif;
+    user-select: none;
+    transition: height 0.3s ease;
+    max-height: 400px;
+    overflow-y: auto;
 }
-#custom-overlay:hover {
-    box-shadow: 3px 3px 15px rgba(0,0,0,0.3);
+
+/* Header Styling */
+#overlay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0073b1;
+    color: white;
+    padding: 5px;
+    border-radius: 10px 10px 0 0;
+    cursor: grab;
+}
+
+#toggleOverlay {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Button Styling */
+.custom-button {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(45deg, #0073b1, #005f8b);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.custom-button:hover {
+    background: linear-gradient(45deg, #005f8b, #004a6d);
+    transform: scale(1.05);
+}
+
+/* Results Styling */
+#results {
+    margin-top: 10px;
+}
+
+#results h4 {
+    margin-bottom: 5px;
+}
+
+#results li {
+    word-break: break-word;
+    overflow-wrap: break-word;
 }

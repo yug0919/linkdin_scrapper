@@ -1,217 +1,200 @@
-// document.getElementById('scrapeNames').addEventListener('click', async () => {
-//     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-//     const results = await chrome.scripting.executeScript({
-//       target: { tabId: tab.id },
-//       func: scrapeNames,
-//     });
-  
-//     const names = results[0].result;
-//     displayResults(names, 'Name Curent name');
-//   });
+document.getElementById("inject").addEventListener("click", async () => {
+    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  
-//   document.getElementById('scrapeEmails').addEventListener('click', async () => {
-//     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-//     const results = await chrome.scripting.executeScript({
-//       target: { tabId: tab.id },
-//       func: scrapeEmails,
-//     });
-  
-//     const emails = results[0].result;
-//     displayResults(emails, 'Emails');
-//   });
-  
-//   function displayResults(data, type) {
-//     const resultList = document.getElementById('results');
-//     resultList.innerHTML = `<h3>${type} Found:</h3>`;
-    
-//     if (data.length > 0) {
-//       data.forEach(item => {
-//         const li = document.createElement('li');
-//         li.textContent = item;
-//         resultList.appendChild(li);
-//       });
-//     } else {
-//       resultList.innerHTML += `<li>No ${type.toLowerCase()} found</li>`;
-//     }
-//   }
-  
-//   function scrapeNames() {
-//     const h1Tag = document.querySelector('h1'); 
-//     return h1Tag ? [h1Tag.innerText.trim()] : []; 
-//   }
-//   function scrapeEmails() {
-//     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
-  
-//     // First, let's look for email addresses in text nodes
-//     const textEmails = Array.from(document.body.innerText.matchAll(emailRegex))
-//       .map(match => match[0]);
-  
-//     // Second, let's check for email addresses in "mailto:" links
-//     const mailtoEmails = Array.from(document.querySelectorAll('a[href^="mailto:"]'))
-//       .map(link => link.getAttribute('href').replace('mailto:', '').trim());
-  
-//     // Combine the two arrays and remove duplicates
-//     const allEmails = [...new Set([...textEmails, ...mailtoEmails])];
-  
-//     return allEmails;
-//   }
-
-
-
-document.getElementById('scrapeAll').addEventListener('click', async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    const nameResults = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: scrapeNames,
-    });
-    
-    const contactResults = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: scrapeContactInfo,
-    });
-
-    const names = nameResults[0]?.result || [];
-    const { emails, websites, linkedIn } = contactResults[0]?.result || { emails: [], websites: [], linkedIn: '' };
-
-    displayResults(names, 'Name (Current name)');
-    displayResults(emails, 'Emails');
-    displayResults(websites, 'Websites');
-    displayResults([linkedIn], 'LinkedIn Profile');
-
-    document.getElementById('saveToSheets').dataset.name = names.length ? names[0] : "Unknown";
-    document.getElementById('saveToSheets').dataset.info = JSON.stringify({ emails, websites, linkedIn });
-
-    console.log("Scraped Data:", { names, emails, websites, linkedIn });
+    if (tab) {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ["content.js"]
+        });
+    }
 });
 
-function scrapeNames() {
-    const h1Tag = document.querySelector('h1');
-    return h1Tag ? [h1Tag.innerText.trim()] : [];
+
+
+
+
+let apiKey=null;
+let selectedUserId=-1;
+let company=null;
+let apiemail=null;
+let apipassword=null;
+
+myInitialize();
+function myInitialize(){
+
+    if(localStorage.getItem("latestlogin")!=null){
+        let latestlogin = localStorage.getItem("latestlogin");
+        apiemail=latestlogin;
+        let latestapikey=JSON.parse(localStorage.getItem(latestlogin));
+        apiKey=latestapikey.apikey;
+    }
+    if(apiKey==null || apiKey === undefined){
+        addLoginForm();
+    }else{
+        addPopupToBody();
+    }
 }
 
-async function scrapeContactInfo() {
-    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
-
-    let emails = [];
-    let websites = [];
-    let linkedIn = '';
-
-    const linkedinMeta = document.querySelector('meta[property="og:url"]');
-    if (linkedinMeta) {
-        linkedIn = linkedinMeta.content;
-    } else {
-        const profileLink = document.querySelector('a[href*="linkedin.com/in/"]');
-        linkedIn = profileLink ? profileLink.href : 'Not Found';
-    }
-
-    const contactInfoButton = Array.from(document.querySelectorAll('a, button')).find(
-        (element) => element.innerText.trim().toLowerCase() === 'contact info'
-    );
-
-    if (contactInfoButton) {
-        contactInfoButton.click();
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        const modal = document.querySelector('[role="dialog"], .artdeco-modal__content');
-
-        if (modal) {
-            const modalText = modal.innerText;
-            emails = Array.from(modalText.matchAll(emailRegex)).map(match => match[0]);
-
-            websites = Array.from(modal.querySelectorAll('a[href^="http"]'))
-                .map(link => link.getAttribute('href'))
-                .filter(link => !link.includes('linkedin.com/in/'))
-                .slice(0, 2);
-
-            const closeModalButton = document.querySelector('button[aria-label="Dismiss"], button[aria-label="Close"]');
-            if (closeModalButton) closeModalButton.click();
-        }
-    }
-
-    return {
-        emails: [...new Set(emails)],
-        websites: [...new Set(websites)],
-        linkedIn: linkedIn
-    };
+function Logout(){
+    localStorage.removeItem("latestlogin");
+    localStorage.removeItem(apiemail);
+    apiKey=null;
+    apiemail=null;
+    apipassword=null;
+    const popupContainer = document.querySelector(".popup-container");
+    popupContainer.remove();
+    addLoginForm();
 }
-function displayResults(data, type) {
-    const resultList = document.getElementById('results');
-    resultList.innerHTML += `<h3>${type} Found:</h3>`;
-
-    if (data.length > 0) {
-        data.forEach((item) => {
-            const li = document.createElement('li');
-
-            // If it's a URL (starts with http), make it a link; otherwise, display as plain text
-            if (item.startsWith("http")) {
-                li.innerHTML = `<a href="${item}" target="_blank">${item}</a>`;
-            } else {
-                li.textContent = item;
-            }
-
-            resultList.appendChild(li);
-        });
-    } else {
-        resultList.innerHTML += `<li>No ${type.toLowerCase()} found</li>`;
-    }
-} 
 
 
-
-
-
-
-
-
-
-
-
-
-document.getElementById('saveToSheets').addEventListener('click', async () => {
-    const saveButton = document.getElementById('saveToSheets');
+async function login() {
+    // if(localStorage.getItem("latestlogin")!=null){
+    //     let latestlogin = localStorage.getItem("latestlogin");
+    //     let latestapikey=JSON.parse(localStorage.getItem(latestlogin));
+    //     alert("Api key is : "+latestapikey.apikey);
+    // }
+    apiemail = document.getElementById("apiemail").value;
+    apipassword = document.getElementById("apipassword").value;
     
-    // Alert to show that the button was clicked
-    alert("data is Saved to Sheets ");
-
-    // Get the dynamic data
-    const name = saveButton.dataset.name || "Unknown";  // Use the dynamic name from the dataset
-    const info = JSON.parse(saveButton.dataset.info || '{}');  // Parse the JSON data stored in dataset
-
-    const { emails, websites, linkedIn } = info;
-
+    if (!apiemail || !apipassword) {
+        alert("Please enter email and password.");
+        return;
+    }
     try {
-        // Sending dynamic data to Google Apps Script via fetch
-        const response = await fetch('https://script.google.com/macros/s/AKfycbyoNQp1SRma2m-ChDJyuCc8JXCymibimfI_AhJjEJhE50JQEhvBRYT3vfcGpUvE2Iw/exec', {
-            method: 'POST',
+        const response = await fetch("https://api-qa.sling-dev.com/v1/users/login", {
+            method: "PUT",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                name: name,
-                linkedIn: linkedIn,
-                emails: emails,
-                websites: websites
-            }),
-            mode: 'no-cors'  // Use no-cors mode if CORS issues persist
+            body: JSON.stringify({ "email":apiemail, "password":apipassword })
         });
 
-        // Check if the response is okay
         if (!response.ok) {
-            throw new Error('Failed to save data');
+            throw new Error("Login failed. Check your credentials.");
         }
 
-        // Parse the response as JSON
-        const result = await response.json();
-        console.log(result);  // Log the response to the console
-        
-        // Show a success alert with the response
-        alert('Data successfully saved! Response: ' + JSON.stringify(result));
-        
-    } catch (error) {
-        // Handle errors and display them in the console and as an alert
-        console.error('Error sending data:', error);
-        // alert('Error sending data: ' + error.message);
+        let myKylasApiKey = localStorage.getItem(apiemail);
+        if (myKylasApiKey) {
+        try {
+            myKylasApiKey = JSON.parse(myKylasApiKey);
+            apikey=myKylasApiKey.apikey;
+            document.getElementById("myloginContainer").remove();
+            addPopupToBody();
+            //alert("Api Key Exists " + myKylasApiKey.email);
+            return;
+        } catch (error) {
+            console.error("Error parsing JSON from localStorage:", error);
+            localStorage.removeItem(apiemail); // Remove corrupt data
+        }
     }
-});
+
+
+        const data = await response.json(); // Get JSON response
+        const token = data.token; // Extract JWT token
+        console.log("Here:- "+token)
+        if (!token) {
+            throw new Error("Token not found in response.");
+        }
+
+        // Decode JWT and extract apiaccessToken
+        const apiaccessToken = "Bearer "+getapiAccessToken(token);
+
+        await getApiKey(apiaccessToken);
+        document.getElementById("myloginContainer").remove();
+        addPopupToBody();
+        ///alert(apiaccessToken); // Show access token in alert
+
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
+
+async function getApiKey(apiaccessToken){
+
+    const response = await fetch("https://api-qa.sling-dev.com/v1/api-keys/kylas-app-key", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization":apiaccessToken
+            }
+        });
+        if (!response.ok) {
+            throw new Error("Login failed.");
+        }
+
+        const data = await response.json(); // Get JSON response
+        apikey = data.apiKey; // Extract JWT token
+
+        if (!apikey) {
+            throw new Error("Token not found in response.");
+        }
+        localStorage.setItem("latestlogin",apiemail);
+        localStorage.setItem(apiemail,JSON.stringify({email:apiemail,password:apipassword,apikey:apikey}));
+        //alert("Api Key is: "+apikey);
+
+
+}
+
+
+function getapiAccessToken(jwt) {
+    try {
+        const parts = jwt.split(".");
+        if (parts.length !== 3) {
+            throw new Error("Invalid JWT format");
+        }
+        const payload = JSON.parse(atob(parts[1])); // Decode Base64 payload
+        console.log(payload);
+        return payload.data?.accessToken || "No access token found";
+    } catch (error) {
+        console.error("JWT Decoding Error:", error);
+        return "Error decoding token";
+    }
+}
+
+
+function addPopupToBody() {
+    // Create a new div element
+    const popupContainer = document.createElement("div");
+    popupContainer.classList.add("popup-container"); // Add class
+
+    // Set the inner HTML for the popup
+    popupContainer.innerHTML = `
+        <div class="header">
+            <img src="KylasLogo.png" alt="Kylas Logo" class="logo">
+            <div class="title-container">
+                <h3>Kylas Surfer</h3>
+                <p>Logged In With:${apiemail || 'Unknown'}</p>
+            </div>
+        </div>
+        <ul class="menu">
+            <li id="one" class="menu-item">Open LinkedIn people search</li>
+            <li id="two" class="menu-item">Get Details From Profile</li>
+            <li id="three" class="menu-item">Open Kylas web app</li>
+            <li id="four" class="menu-item">Logout</li>
+        </ul>
+    `;
+
+    // Append the popup container to the body
+    document.body.appendChild(popupContainer);
+}
+
+
+function addLoginForm() {
+    // Create the container div
+    const loginContainer = document.createElement("div");
+    loginContainer.id = "myloginContainer";
+    loginContainer.classList.add("login-container");
+
+    // Set the inner HTML for the login form
+    loginContainer.innerHTML = `
+        <h2>Kylas Login</h2>
+        <input class="login-input" type="text" id="apiemail" placeholder="email">
+        <input class="login-input" type="password" id="apipassword" placeholder="Password">
+        <button class="login-button" id="loginButton">Login</button>
+    `;
+    // Append to the body
+    document.body.appendChild(loginContainer);
+}
+
+
+

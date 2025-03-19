@@ -1,72 +1,10 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name Scraper</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 10px; }
-        button { padding: 8px 16px; cursor: pointer; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-    <h3>Scrape Names</h3>
-    <button id="scrapeNames">Scrape Current Name</button>
-    <h3>Scrape Emails</h3>
-    <button id="scrapeEmails">Scrape Emails</button>
-    <h3>Save Data</h3>
-    <button id="saveToSheets">Save to Google Sheets</button>
-    <ul id="results"></ul>
-
-    <script src="popup.js"></script>
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkedIn Scraper</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            width: 300px;
-            padding: 10px;
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #0073b1;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #005582;
-        }
-        #results {
-            margin-top: 10px;
-        }
-        h3 {
-            margin: 5px 0;
-        }
-        li {
-            list-style-type: none;
-            margin: 2px 0;
-        }
-    </style>
+    <title>Overlay Injector</title>
+    <script src="popup.js" defer></script>
 </head>
 <body>
-    <h2>LinkedIn Scraper</h2>
-    <button id="scrapeAll">Scrape All</button>
-    <button id="saveToSheets">Save to Google Sheets</button>
-
-    
-    <div id="results"></div>
-    <script src="popup.js"></script>
+    <button id="inject">Inject Overlay</button>
 </body>
 </html>

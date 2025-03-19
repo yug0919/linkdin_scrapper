@@ -1,0 +1,141 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    width: 360px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal {
+    width: 320px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+.header {
+    color:#007bff;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.form-group {
+    margin-bottom: 10px;
+}
+label {
+    margin-left: 5px;
+    display: block;
+    font-weight: bold;
+}
+input {
+    margin-left: 5px;
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.btn {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.btn.cancel {
+    background-color:white;
+    color: #007bff;
+    border: 2px solid #007bff;
+}
+.btn.save {
+    background: #007bff;
+    color: white;
+}
+
+.scrape-button {
+    background-color: #007bff;
+    color: white;
+    font-size: 18px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 50px auto;
+}
+
+.scrape-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+
+
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    width: 250px;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.popup-container {
+    padding: 10px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.title-container h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.title-container p {
+    margin: 0;
+    font-size: 12px;
+    color: #777;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.menu-item:hover {
+    background-color: #f0f0f0;
+}
